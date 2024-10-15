@@ -73,10 +73,10 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
      DEBIAN_FRONTEND=noninteractive apt -y  --force-yes update
      DEBIAN_FRONTEND=noninteractive apt -y  --force-yes upgrade
-     DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes curl apache2 mariadb-server
+     DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes curl apache2 mariadb-server nodejs npm
 	 DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:ondrej/php
 	 DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes php8.3 php8.3-{cli,bz2,curl,mbstring,intl,fpm}
-	 a2disconf php8.2-fpm
+	 a2disconf php8.3-fpm
 	 a2enconf php8.3-fpm
 	 systemctl reload apache2
   SHELL

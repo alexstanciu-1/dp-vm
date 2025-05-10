@@ -107,6 +107,7 @@ Vagrant.configure("2") do |config|
 	 a2disconf php8.3-fpm
 	 a2enconf php8.3-fpm
 	 systemctl reload apache2
-	 php /desc-prog/libs/provision/provision.php
+	 php /desc-prog/vm/provision/provision.php
   SHELL
 end
+

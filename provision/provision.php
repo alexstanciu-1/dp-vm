@@ -68,7 +68,8 @@ file_put_contents("/etc/php/8.4/fpm/pool.d/provision.conf", $php_fpm_conf);
 		chmod +x /home/desc_prog/lib/instances/*");
 }
 
-echo shell_exec("service php8.4-fpm restart");
+# too many restarts gives an error
+# echo shell_exec("service php8.4-fpm restart");
 
 echo shell_exec("a2ensite desc_prog");
 echo shell_exec("a2ensite provision");

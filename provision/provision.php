@@ -126,7 +126,7 @@ mkdir("/home/desc_prog/lib/", 0750);
 echo shell_exec("rsync -a --chmod=750 --chown={$User}:www-data /desc-prog/ /home/desc_prog/lib/");
 echo shell_exec("find /home/desc_prog/lib -type f -exec chmod 640 {} +");
 
-echo shell_exec("rsync -a --chmod=750 --chown=root:www-data /desc-prog/libs/provision/server/public_html/ /_provision/public_html");
+echo shell_exec("rsync -a --chmod=750 --chown=root:www-data /desc-prog/vm/provision/server/public_html/ /_provision/public_html");
 # echo shell_exec("find /_provision -type f -exec chmod 640 {} +");
 
 # Alias /phpmyadmin /usr/share/phpmyadmin

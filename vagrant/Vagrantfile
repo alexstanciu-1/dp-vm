@@ -5,6 +5,7 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+# vagrant plugin install vagrant-timezone
 Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
@@ -13,6 +14,13 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "bento/ubuntu-24.04"
+
+  # config.ssh.username = "vagrant"
+  config.ssh.keep_alive = true
+
+  if Vagrant.has_plugin?("vagrant-timezone")
+    config.timezone.value = :host
+  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -51,6 +59,8 @@ Vagrant.configure("2") do |config|
   # If you use this you may want to enable additional shared subfolders as
   # shown above.
   # config.vm.synced_folder ".", "/vagrant", disabled: true
+  # config.vm.synced_folder "../..", "/desc-prog", type: "smb"
+  config.vm.synced_folder "../..", "/desc-prog"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -70,17 +80,33 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
+
+  config.vm.provision "shell" do |s|
+    ssh_pub_key = `cat ~/.ssh/id_rsa.pub`
+    ssh_pub_key.strip!
+    s.inline = <<-SHELL
+      useradd -m desc_prog
+      usermod -G www-data,sudo desc_prog
+      mkdir -p /home/desc_prog/.ssh
+      chmod 0700 /home/desc_prog/.ssh
+      ssh-keygen -t rsa -b 4096 -C "desc.prog@omibit.com" -f /home/desc_prog/.ssh/id_rsa
+      chown desc_prog:desc_prog /home/desc_prog/.ssh -R
+      chmod 0600 /home/desc_prog/.ssh/*
+      echo #{ssh_pub_key} >> /home/desc_prog/.ssh/authorized_keys
+      echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
+    SHELL
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
      DEBIAN_FRONTEND=noninteractive apt -y  --force-yes update
      DEBIAN_FRONTEND=noninteractive apt -y  --force-yes upgrade
-     DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes curl apache2 mariadb-server nodejs npm htop iotop sysstat
+     DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes curl apache2 apache2-suexec-custom mariadb-server nodejs npm htop iotop sysstat rsync git
 	 DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:ondrej/php
-	 DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes php8.3 php8.3-{cli,bz2,curl,mbstring,intl,fpm}
+	 DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes php8.3 php8.3-{cli,bz2,curl,mbstring,intl,fpm,mysql} phpmyadmin
+     DEBIAN_FRONTEND=noninteractive apt install -y  --force-yes php8.4 php8.4-{cli,bz2,curl,mbstring,intl,fpm,mysql} phpmyadmin
 	 a2disconf php8.3-fpm
 	 a2enconf php8.3-fpm
 	 systemctl reload apache2
-
-	 php /vagrant/~provision/provision.php
-
+	 php /desc-prog/libs/provision/provision.php
   SHELL
 end

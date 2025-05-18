@@ -60,7 +60,7 @@ Vagrant.configure("2") do |config|
   # shown above.
   # config.vm.synced_folder ".", "/vagrant", disabled: true
   # config.vm.synced_folder "../..", "/desc-prog", type: "smb"
-  config.vm.synced_folder "../..", "/desc-prog"
+  config.vm.synced_folder "../..", "/desc-prog", type: "rsync"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
